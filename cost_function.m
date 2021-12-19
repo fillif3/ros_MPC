@@ -7,10 +7,10 @@ for i=1:horizon
         current_inputs(j)=sin(current_inputs(j))*(maximumInput(j)-minimumInput(j))/2+(maximumInput(j)+minimumInput(j))/2;
     end
     currentState=model(current_inputs,currentState,timeStep);
-    if getOccupancy(map,currentState(1:2))
-        cost =realmax;
-        return 
-    end
+    %if getOccupancy(map,currentState(1:2))
+    %    cost =realmax;
+    %    return 
+    %end
     predictedStates{i}=currentState;
 end
 cost=distanceFunction(trajectory,predictedStates);

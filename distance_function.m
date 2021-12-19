@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = distance_function(trajectory,predictedStates,weights)
+function distance= distance_function(trajectory,predictedStates,weights)
 distance=0;
 for i=1:length(trajectory)
     trajectoryPosition=trajectory{i};

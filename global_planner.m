@@ -1,4 +1,4 @@
-function pthObj = global_planner(starting_pose,destination,map)
+function pthObj = global_planner(starting_pose,destination,map,pathLength)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 %costmap = vehicleCostmap(map);
@@ -19,12 +19,12 @@ planner.MaxIterations = 30000;
 planner.GoalReachedFcn = @exampleHelperCheckIfGoal;
 
 [pthObj, ~] = plan(planner,starting_pose,destination);
-
+interpolate(pthObj,pathLength)
 
 
 function isReached = exampleHelperCheckIfGoal(planner, goalState, newState)
     isReached = false;
-    threshold = 0.1;
+    threshold = 0.01;
     if planner.StateSpace.distance(newState, goalState) < threshold
         isReached = true;
     end
