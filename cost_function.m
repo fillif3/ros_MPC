@@ -1,17 +1,14 @@
-function cost= cost_function(inputs,currentState,trajectory,model,horizon,distanceFunction,timeStep,minimumInput,maximumInput,map)
+function cost= cost_function(inputs,currentState,model,horizon,destination,...
+    timeStep)
 numberOfInputs= length(inputs)/horizon;
-predictedStates=cell(1,horizon);
+cost=0;
 for i=1:horizon
     current_inputs = inputs((numberOfInputs*(i-1)+1):(numberOfInputs*i));
-    for j=1:numberOfInputs
-        current_inputs(j)=sin(current_inputs(j))*(maximumInput(j)-minimumInput(j))/2+(maximumInput(j)+minimumInput(j))/2;
-    end
     currentState=model(current_inputs,currentState,timeStep);
     %if getOccupancy(map,currentState(1:2))
     %    cost =realmax;
     %    return 
     %end
-    predictedStates{i}=currentState;
+    cost=cost+norm(currentState(1:2) - destination);
 end
-cost=distanceFunction(trajectory,predictedStates);
 end

@@ -22,8 +22,8 @@ else
     R = input(1)/input(2);
     circleX = state(1)+cos(beta)*R;
     circleY = state(2)+sin(beta)*R;
-    delta_theta= input(2)*timeStep;
-    beta=beta-delta_theta;
+    delta_theta= -input(2)*timeStep;
+    beta=beta+delta_theta;
     state(3)=state(3)+delta_theta;
     state(1)=circleX-cos(beta)*R;
     state(2)=circleY-sin(beta)*R;

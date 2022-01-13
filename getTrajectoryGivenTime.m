@@ -2,7 +2,7 @@ function [trajectory,horizon] = getTrajectoryGivenTime(fullTrajectory,currentTim
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 fullTimeOfMission = timeStep*length(fullTrajectory);
-horizon = min(floor((fullTimeOfMission-currentTime)/timeStep),fullHorizon);
+horizon = min(floor((fullTimeOfMission-currentTime)/timeStep)-1,fullHorizon);
 weightForInterpolation = 1-mod(currentTime,timeStep)/timeStep;
 index= floor(currentTime/timeStep);
 trajectory=cell(1,horizon);
