@@ -9,9 +9,9 @@ rosinit(ipAddr)
 
 % Create ROS subscribers
 startingPoseSub = rossubscriber('/initialpose','geometry_msgs/PoseWithCovarianceStamped');
-destinationSub=rossubscriber('/move_base_simple/goal','geometry_msgs/PoseStamped');
+destinationSub=rossubscriber('/move_base_simple/goal','geometry_msgs/PoseStamped',@update_destination);
 mapSub = rossubscriber('/map','nav_msgs/OccupancyGrid');
-PoseSub = rossubscriber('/amcl_pose','geometry_msgs/PoseWithCovarianceStamped');
+PoseSub = rossubscriber('/amcl_pose','geometry_msgs/PoseWithCovarianceStamped',@update_state);
 disp('Wait for map')
 mapMsg = receive(mapSub);
 map = readBinaryOccupancyGrid(mapMsg);
@@ -32,11 +32,12 @@ disp('got everything')
 % Start visualization
 
 % Load parameters
-timeStep=0.5;
+timeStep=2;
+delay=1;
 r = rosrate(1/timeStep);
 maxHorizon=3;
-lb=[-0.22,-2.84];
-ub=[0.22,2.84];
+lb=[-0.22,-2.84]*0.3;
+ub=[0.22,2.84]*0.3;
 
 
 %Compute path
@@ -49,14 +50,14 @@ destinationState(1) = destination.Pose.Position.X;
 destinationState(2) = destination.Pose.Position.Y;
 q = destination.Pose.Orientation;
 destinationState(3) = atan2(2.0*(q.X * q.Y + q.W * q.Z), q.W*q.W + q.X*q.X - q.Y*q.Y - q.Z*q.Z);
-lastMsgId=0;
 %% CONTROL LOOP
 % Start while-loop, which runs indefinitely and as quickly as possible.
-firstTimeLoop=true;
 reset(r)
 realStates=currentState;
 msgs={};
-for i=1:100
+controlTrajectory=[0,0];
+tic
+while true
     %% 1: SENSE
     % Get latest data from ROS subscribers
 %     if firstTimeLoop
@@ -84,10 +85,13 @@ for i=1:100
     %% 2: PROCESS
     % Run perception and control algorithms, which use received data and 
     % control parameters to produce some output.
-    controlTrajectory=MPC_path(currentState,destinationState(1:2),timeStep,...
+    future_state=wheeled_robot_kinematics_model(controlTrajectory(1:2),currentState,delay);
+    controlTrajectory=MPC_path(future_state,destinationState(1:2),timeStep,...
         maxHorizon,lb,ub,@wheeled_robot_kinematics_model,map);
     currentState=wheeled_robot_kinematics_model(controlTrajectory(1:2),currentState,timeStep);
-    realStates(i+1,:)= currentState;
+    disp('created control input')
+    disp(controlTrajectory(1:2))
+    disp(currentState)
 
     
 %     disp('input')
@@ -106,7 +110,30 @@ for i=1:100
     velMsg.Linear.X = controlTrajectory(1);
     velMsg.Angular.Z = controlTrajectory(2);
     send(velPub,velMsg);
-    msgs{i}=[controlTrajectory(1);controlTrajectory(2)];
+    %msgs{i}=[controlTrajectory(1);controlTrajectory(2)];
+    toc
     waitfor(r);
+    disp('after waiting')
+    toc
 % End while-loop
+end
+
+function update_state(~,msg)
+    currentState(1) = msg.Pose.Pose.Position.X;
+    currentState(2) = msg.Pose.Pose.Position.Y;
+    q = msg.Pose.Pose.Orientation;
+    currentState(3) = atan2(2.0*(q.X * q.Y + q.W * q.Z), q.W*q.W + q.X*q.X - q.Y*q.Y - q.Z*q.Z);
+    assignin('base','currentState',currentState)
+    disp('GET STATE')
+    disp(currentState)
+end
+
+function update_destination(~,msg)
+    destinationState(1) = msg.Pose.Position.X;
+    destinationState(2) = msg.Pose.Position.Y;
+    q = msg.Pose.Orientation;
+    destinationState(3) = atan2(2.0*(q.X * q.Y + q.W * q.Z), q.W*q.W + q.X*q.X - q.Y*q.Y - q.Z*q.Z);
+    assignin('base','destinationState',destinationState)
+    disp('GET destination')
+    disp(destinationState)
 end
