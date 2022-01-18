@@ -8,7 +8,7 @@ lb=repmat(minimumInput,1,fullHorizon);
 ub=repmat(maximumInput,1,fullHorizon);
 costFunction = @(x) cost_function(x,currentState,model,fullHorizon,destination,timeStep);
 nonlocon = @(x) map_checker(x,currentState,model,fullHorizon,timeStep,map);
-options = optimoptions('ga','Display','off','MaxGenerations',3);
+options = optimoptions('ga','Display','off','MaxGenerations',2);
 [controlInputs,fval,a,b] = ga(costFunction,length(maximumInput)*fullHorizon,[],[]...
     ,[],[],lb,ub,nonlocon,options);
 
