@@ -5,11 +5,13 @@ import rospy
 
 import utils
 from APF import navigate_APF
+from fuzzyController import navigate_fuzzy
+
 
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, Pose
 from sensor_msgs.msg import LaserScan
 
-
+ALGORITHM=1
 SCAN_HZ=5
 
 destination=None
@@ -47,7 +49,12 @@ def move(scan):
     #rospy.loginfo(predicted_position)
     #rospy.loginfo(current_position)
     #rospy.loginfo(destination)
-    v,w = navigate_APF(predicted_position,scan,destination)
+    if ALGORITHM==0:
+        v,w = navigate_APF(predicted_position,scan,destination)
+    elif ALGORITHM==1:
+        v,w = navigate_fuzzy(predicted_position,scan,destination)
+    else:
+        raise ValueError
     send_velocity(v,w)
     predicted_position = robot_motion_model(predicted_position,v,w,1/SCAN_HZ)
     

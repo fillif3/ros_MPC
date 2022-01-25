@@ -62,13 +62,12 @@ tic
 while true
    
     %% 1: SENSE
-    destinationMsg.Position.X=destinationState(1);
-    destinationMsg.Position.Y=destinationState(2);
-    setQuanternionHeading(destinationMsg.Orientation,destinationState(3));
+    destinationMapMsg.X=destinationState(1);
+    destinationMapMsg.Y=destinationState(2);
+    setQuanternionHeading(estinationMapMsg.Orientation,destinationState(3))
 
-    send(destinationPub,destinationMsg);
+    send(destinationMapPub,destinationMapMsg);
     waitfor(r);
-    continue
     % Get latest data from ROS subscribers
 %     if firstTimeLoop
 %         firstTimeLoop=false;
