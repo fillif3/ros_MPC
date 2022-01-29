@@ -175,10 +175,17 @@ def fuzzy_control_destination(estimated_pose,destination):
     while angle_error<-pi:
         angle_error=angle_error+2*pi
     fc_linear.input['error_linear']=dist
-    v =fc_linear.compute()
+    fc_linear.input['error_angular']=angle_error
+    print(fc_linear.input)
+    fc_linear.compute()
+    v = fc_linear.output['velocity_linear']
     fc_angular.input['error_angular'] = angle_error
-    w = fc_angular.compute()
-    return v,w
+    fc_angular.compute()
+    w = fc_angular.output['velocity_angular']
+    print(fc_linear.output)
+    print(fc_angular.output)
+
+    return v/10,w
 
 def get_scans_groups(scan):
     scans_groups=[]
@@ -215,28 +222,29 @@ def fuzzy_control_avoid_obstacle(scan):
     right=2
     for s in scans_groups:
         if (-pi*7/20)<s['angle']<(-pi*7/400):
-            left = max(left,s['dist'])
+            left = min(left,s['dist'])
         elif (-pi*7/400)<=s['angle']<=(pi*7/400):
-            forward = max(forward, s['dist'])
+            forward = min(forward, s['dist'])
         elif (pi * 7 / 400) < s['angle'] < (pi * 7 / 20):
-            right = max(right, s['dist'])
+            right = min(right, s['dist'])
     fc_linear_obs.input['obstacle_distance_left']=left
     fc_linear_obs.input['obstacle_distance_middle'] = forward
     fc_linear_obs.input['obstacle_distance_right'] = right
     print(fc_linear_obs.input)
-    v = fc_linear_obs.compute()
+    fc_linear_obs.compute()
+    v=fc_linear_obs.output['velocity_linear_obs']
     fc_angular_obs.input['obstacle_distance_left'] = left
     fc_angular_obs.input['obstacle_distance_middle'] = forward
     fc_angular_obs.input['obstacle_distance_right'] = right
 
-    w = fc_angular_obs.compute()
-
-    return v,w
+    fc_angular_obs.compute()
+    w=fc_angular_obs.output['velocity_angular_obs']
+    return v/10,w
 
 def obstacle_far(scan):
     groups= get_scans_groups(scan)
     for g in groups:
-        if g['dist']<2:
+        if g['dist']<0.4:
             return False
     return True
 
