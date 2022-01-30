@@ -17,7 +17,7 @@ for i=1:numberOfInputs
             insideHelper=0;
             for k=1:numberOfRules
                 insideHelper=insideHelper+(oldFis.Outputs(1).MembershipFunctions(k).Parameters-fis_outputs(j))*...
-                    memberships(k)*(inputs(j)-oldFis.Inputs(i).MembershipFunctions(m).Parameters(2))/oldFis.Inputs(i).MembershipFunctions(m).Parameters(1)^2;
+                    memberships(k)*(inputs(j)-oldFis.Inputs(i).MembershipFunctions(m).Parameters(2))/oldFis.Inputs(i).MembershipFunctions(k).Parameters(1)^2;
             end
             
             helperValue=helperValue+errors(j)/sum(memberships)*insideHelper*2;
