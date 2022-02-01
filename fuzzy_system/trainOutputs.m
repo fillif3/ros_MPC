@@ -1,7 +1,7 @@
 function fis = trainOutputs(fis,u,groundTruth,outputs,learningRate)
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
-errors=groundTruth-outputs;
+errors=groundTruth-outputs';
 numberOfOuputs=length(errors);
 numberOfRules=length(fis.Rules);
 for i=1:numberOfRules

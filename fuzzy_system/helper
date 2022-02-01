@@ -1,0 +1,8 @@
+a=0:0.2:2*pi;
+b=0:0.2:2*pi;
+c= zeros(length(b)*length(a),2);
+for i=1:length(b)
+    for j=1:length(a)
+        c((i-1)*length(a)+j,:)=[a(j),b(i)];
+    end
+end

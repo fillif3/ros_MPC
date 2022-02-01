@@ -6,11 +6,11 @@ s = size(InputUniversesRanges);
 numberOfUniverses=s(2);
 for i=1:numberOfUniverses
     fis = addInput(fis,InputUniversesRanges(:,i)','NumMFs',numberOfMF(i),'MFType',"gaussmf");
-    %for j = 1:numberOfMF(i)
-    %    fis.Inputs(i).MembershipFunctions(j).Parameters(1)=rand(1)*10;
-    %    fis.Inputs(i).MembershipFunctions(j).Parameters(2)=rand(1)*(InputUniversesRanges(2,i)-InputUniversesRanges(1,i))+InputUniversesRanges(1,i);
+    for j = 1:numberOfMF(i)
+        fis.Inputs(i).MembershipFunctions(j).Parameters(1)=rand(1)*10;
+        fis.Inputs(i).MembershipFunctions(j).Parameters(2)=rand(1)*(InputUniversesRanges(2,i)-InputUniversesRanges(1,i))+InputUniversesRanges(1,i);
 
-    %end
+    end
 end
 ruleVector=ones(size(numberOfMF));
 ruleVector(end+1)=1;
